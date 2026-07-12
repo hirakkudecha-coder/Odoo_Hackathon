@@ -44,3 +44,53 @@
 .animate-slide-in {
   animation: slide-in-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Global premium transitions & hover effects */
+a, button, input, select, textarea, .glass-panel, tr, .card {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px) scale(1.01);
+  filter: brightness(1.05);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.glass-panel {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  transform: translateY(-3px);
+  border-color: rgba(234, 88, 12, 0.25) !important;
+  box-shadow: 0 20px 25px -5px rgba(234, 88, 12, 0.05), 0 10px 10px -5px rgba(234, 88, 12, 0.02);
+}
+
+input, select, textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+input:focus, select:focus, textarea:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15) !important;
+}
+
+tr {
+  transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+  background-color: rgba(234, 88, 12, 0.03) !important;
+}
+
+nav a {
+  transition: all 0.2s ease;
+}
+
+nav a:hover {
+  transform: translateX(4px);
+}
+

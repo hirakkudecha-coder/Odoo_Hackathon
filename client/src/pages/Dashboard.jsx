@@ -254,7 +254,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Charts & Expenses Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Left main chart */}
         <motion.div variants={itemVariants} className="glass-panel rounded-3xl p-6 lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -272,13 +272,49 @@ export default function Dashboard() {
         <motion.div variants={itemVariants} className="glass-panel rounded-3xl p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-bold text-base">Expense Allocation</h3>
+              <h3 className="font-bold text-base">Expense Allocation (Pie)</h3>
               <p className="text-xs text-slate-500">Cost distribution categories</p>
             </div>
           </div>
           <div className="h-60 flex items-center justify-center">
             {expenseBreakdown.length > 0 ? (
               <Doughnut data={doughnutData} options={{ responsive: true, maintainAspectRatio: false }} />
+            ) : (
+              <div className="text-xs text-slate-400 font-medium">No expenses logged.</div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Right bar chart */}
+        <motion.div variants={itemVariants} className="glass-panel rounded-3xl p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+            <div>
+              <h3 className="font-bold text-base">Expense Allocation (Bar)</h3>
+              <p className="text-xs text-slate-500">Cost distribution categories</p>
+            </div>
+          </div>
+          <div className="h-60 flex items-center justify-center">
+            {expenseBreakdown.length > 0 ? (
+              <Bar 
+                data={{
+                  labels: expenseBreakdown.map(e => e.category),
+                  datasets: [{
+                    label: 'Expense Amount ($)',
+                    data: expenseBreakdown.map(e => e.amount),
+                    backgroundColor: ['#EA580C', '#F59E0B', '#22C55E', '#F79E1B', '#EF4444'],
+                    borderRadius: 6
+                  }]
+                }} 
+                options={{ 
+                  responsive: true, 
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      display: false
+                    }
+                  }
+                }} 
+              />
             ) : (
               <div className="text-xs text-slate-400 font-medium">No expenses logged.</div>
             )}
