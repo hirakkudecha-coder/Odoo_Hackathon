@@ -28,7 +28,7 @@ const ROLE_PERMISSIONS = {
   'Financial Analyst': [
     'expense:read', 'expense:write', 'expense:delete',
     'fuel:read', 'fuel:write', 'fuel:delete',
-    'trip:read',
+    'trip:read', 'vehicle:read',
     'report:read', 'report:export',
     'dashboard:finance', 'settings:read', 'settings:write'
   ]

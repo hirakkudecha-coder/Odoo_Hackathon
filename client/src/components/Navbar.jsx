@@ -22,16 +22,16 @@ export default function Navbar() {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   return (
-    <header className="h-16 border-b border-slate-200/50 dark:border-slate-800/50 px-6 flex items-center justify-between bg-white/70 dark:bg-slate-900/70 backdrop-blur-md sticky top-0 z-20">
+    <header className="h-16 border-b border-zinc-800 px-6 flex items-center justify-between bg-brandbg-dark sticky top-0 z-20">
       {/* Search Input */}
       <div className="relative w-64 max-w-lg hidden sm:block">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-          <Search size={18} />
+        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
+          <Search size={16} />
         </span>
         <input 
           type="text" 
           placeholder="Global system search..." 
-          className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm transition-all"
+          className="w-full pl-9 pr-4 py-2 border border-zinc-800 rounded-lg bg-zinc-900 focus:outline-none focus:border-primary text-sm transition-all text-white placeholder-zinc-500"
         />
       </div>
       
@@ -40,44 +40,35 @@ export default function Navbar() {
 
       {/* Action Items */}
       <div className="flex items-center gap-4">
-        {/* Theme Switcher */}
-        <button 
-          onClick={() => dispatch(toggleTheme())}
-          className="p-2 rounded-xl border border-slate-200/40 dark:border-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
-          title="Toggle Theme"
-        >
-          {themeMode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
-
         {/* Notifications */}
         <div className="relative">
           <button 
             onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-xl border border-slate-200/40 dark:border-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors relative"
+            className="p-2 rounded-lg border border-zinc-800 hover:text-white hover:bg-zinc-800 text-zinc-400 transition-colors relative"
             title="Notifications"
           >
-            <Bell size={18} />
+            <Bell size={16} />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-danger animate-pulse" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-primary animate-pulse border-2 border-brandbg-dark" />
             )}
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-premium p-4 z-50 animate-slide-in">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                <h4 className="font-bold text-sm">System Notifications</h4>
+            <div className="absolute right-0 mt-3 w-80 bg-brandcard-dark border border-zinc-800 rounded-lg shadow-premium p-4 z-50 animate-slide-in">
+              <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
+                <h4 className="font-bold text-sm text-white">System Notifications</h4>
                 {unreadCount > 0 && (
                   <button onClick={markAllRead} className="text-xs text-primary hover:underline font-semibold">
                     Mark all read
                   </button>
                 )}
               </div>
-              <div className="mt-3 space-y-3 max-h-60 overflow-y-auto">
+              <div className="mt-3 space-y-2 max-h-60 overflow-y-auto pr-1">
                 {notifications.map(n => (
-                  <div key={n.id} className={`p-2 rounded-xl text-xs space-y-1 ${n.unread ? 'bg-primary-light/30 dark:bg-primary-dark/20' : ''}`}>
-                    <p className="font-medium text-slate-700 dark:text-slate-300">{n.text}</p>
-                    <span className="text-[10px] text-slate-400 font-semibold">{n.time}</span>
+                  <div key={n.id} className={`p-3 rounded-lg text-xs space-y-1 ${n.unread ? 'bg-primary/10 border border-primary/20' : 'bg-zinc-900 border border-zinc-800'}`}>
+                    <p className={`font-medium ${n.unread ? 'text-white' : 'text-zinc-400'}`}>{n.text}</p>
+                    <span className="text-[10px] text-zinc-500 font-semibold">{n.time}</span>
                   </div>
                 ))}
               </div>
@@ -86,13 +77,13 @@ export default function Navbar() {
         </div>
 
         {/* User Badge */}
-        <div className="flex items-center gap-3 border-l border-slate-200 dark:border-slate-800 pl-4">
-          <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
-            <User size={18} />
+        <div className="flex items-center gap-3 border-l border-zinc-800 pl-4">
+          <div className="w-8 h-8 rounded bg-primary/20 border border-primary/50 flex items-center justify-center text-primary shrink-0">
+            <User size={16} />
           </div>
-          <div className="hidden md:block text-left">
-            <p className="text-sm font-semibold leading-none">{user?.name}</p>
-            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{user?.role}</span>
+          <div className="hidden md:flex flex-col text-left">
+            <span className="text-sm font-semibold text-white leading-none">{user?.name}</span>
+            <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mt-1">{user?.role}</span>
           </div>
         </div>
       </div>

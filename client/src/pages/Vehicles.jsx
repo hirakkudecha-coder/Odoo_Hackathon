@@ -315,17 +315,34 @@ export default function Vehicles() {
           </div>
 
           {editingVehicle && (
-            <div>
-              <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Operational Status</label>
-              <select 
-                {...register('status')}
-                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none"
-              >
-                {['available', 'on_trip', 'maintenance', 'retired'].map(s => (
-                  <option key={s} value={s}>{s.replace('_', ' ').toUpperCase()}</option>
-                ))}
-              </select>
-            </div>
+            <>
+              <div>
+                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Operational Status</label>
+                <select 
+                  {...register('status')}
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none"
+                >
+                  {['available', 'on_trip', 'maintenance', 'retired'].map(s => (
+                    <option key={s} value={s}>{s.replace('_', ' ').toUpperCase()}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="pt-2">
+                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Attached Documents</label>
+                {editingVehicle.documents && editingVehicle.documents.length > 0 ? (
+                  <ul className="space-y-2 border border-slate-200 dark:border-slate-800 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-900">
+                    {editingVehicle.documents.map((doc, idx) => (
+                      <li key={idx} className="flex items-center justify-between">
+                        <span className="font-semibold text-primary truncate max-w-[150px]">{doc.name}</span>
+                        <span className="text-[10px] text-slate-500">Exp: {doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString() : 'N/A'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-slate-400 text-[10px] italic">No documents attached. Use the upload button on the table.</div>
+                )}
+              </div>
+            </>
           )}
 
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">

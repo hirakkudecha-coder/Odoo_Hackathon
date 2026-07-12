@@ -9,10 +9,10 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#2563EB',
-          hover: '#1D4ED8',
-          light: '#DBEAFE',
-          dark: '#1E40AF'
+          DEFAULT: '#f97316', // Orange-500 matching the screenshot
+          hover: '#ea580c',   // Orange-600
+          light: '#ffedd5',   // Orange-100
+          dark: '#c2410c'     // Orange-700
         },
         secondary: {
           DEFAULT: '#0EA5E9',
@@ -33,19 +33,19 @@ export default {
         },
         brandbg: {
           light: '#F8FAFC',
-          dark: '#0F172A'
+          dark: '#0a0a0a' // Deeper black matching the screenshot background
         },
         brandcard: {
           light: '#FFFFFF',
-          dark: '#1E293B'
+          dark: '#171717' // Slightly elevated dark grey matching the screenshot cards
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.08)',
-        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03)',
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
+        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 10px -1px rgba(0, 0, 0, 0.2)',
       }
     },
   },
