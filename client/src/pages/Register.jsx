@@ -1,42 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import { Mail, Lock, LogIn, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice.js';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.auth.loading);
+  const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState(null);
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
-
-  const handleRoleChange = (e) => {
-    const role = e.target.value;
-    if (role) {
-      setValue('email', 'transitops@common.com');
-      setValue('password', 'password123');
-    }
-  };
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
-    dispatch(loginStart());
+    setLoading(true);
     setErrorState(null);
+    dispatch(loginStart());
     try {
-      const response = await axios.post('/api/v1/auth/login', data);
+      const response = await axios.post('/api/v1/auth/register', data);
       dispatch(loginSuccess(response.data));
-      toast.success('Logged in successfully!');
+      toast.success('Registered & Logged in successfully!');
       navigate('/dashboard');
     } catch (error) {
-      const msg = error.response?.data?.message || 'Login failed';
+      const msg = error.response?.data?.message || 'Registration failed';
       dispatch(loginFailure(msg));
       setErrorState(msg);
       toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +56,7 @@ export default function Login() {
 
           {/* List of Roles */}
           <div className="space-y-3 pt-6">
-            <p className="font-semibold text-slate-700 dark:text-slate-350 text-sm">One login, four roles:</p>
+            <p className="font-semibold text-slate-700 dark:text-slate-350 text-sm">Join the platform as:</p>
             <ul className="space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
               <li className="flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Fleet Manager
@@ -85,15 +80,32 @@ export default function Login() {
         </div>
       </div>
 
-      {/* RIGHT PANEL: Credentials Panel */}
+      {/* RIGHT PANEL: Registration Form */}
       <div className="w-full md:w-7/12 flex items-center justify-center p-8 md:p-16 relative">
         <div className="w-full max-w-md space-y-6">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold tracking-tight text-white">Sign in to your account</h2>
-            <p className="text-xs text-slate-400">Enter your credentials to continue</p>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Create your account</h2>
+            <p className="text-xs text-slate-400">Sign up to get started with TransitOps</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-xs">
+            {/* Name Field */}
+            <div>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
+              <div className="relative">
+                <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                  <User size={14} />
+                </span>
+                <input 
+                  type="text" 
+                  {...register('name', { required: 'Name is required' })}
+                  placeholder="John Doe" 
+                  className={`w-full pl-10 pr-4 py-2.5 border rounded-xl bg-slate-900/60 border-slate-800 text-white focus:outline-none focus:ring-1 focus:ring-primary/55 ${errors.name ? 'border-danger' : 'focus:border-primary'}`}
+                />
+              </div>
+              {errors.name && <p className="text-[10px] text-danger mt-1">{errors.name.message}</p>}
+            </div>
+
             {/* Email Field */}
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
@@ -120,7 +132,7 @@ export default function Login() {
                 </span>
                 <input 
                   type="password" 
-                  {...register('password', { required: 'Password is required' })}
+                  {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Password must be at least 6 characters' } })}
                   placeholder="••••••••" 
                   className={`w-full pl-10 pr-4 py-2.5 border rounded-xl bg-slate-900/60 border-slate-800 text-white focus:outline-none focus:ring-1 focus:ring-primary/55 ${errors.password ? 'border-danger' : 'focus:border-primary'}`}
                 />
@@ -128,35 +140,20 @@ export default function Login() {
               {errors.password && <p className="text-[10px] text-danger mt-1">{errors.password.message}</p>}
             </div>
 
-            {/* Role select */}
+            {/* Role Select */}
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Role (RBAC)</label>
               <select 
-                {...register('role')}
-                onChange={(e) => {
-                  register('role').onChange(e);
-                  handleRoleChange(e);
-                }}
-                className="w-full px-3.5 py-2.5 border rounded-xl bg-slate-900/60 border-slate-800 text-white focus:outline-none focus:ring-1 focus:ring-primary/55"
+                {...register('role', { required: 'Role is required' })}
+                className={`w-full px-3.5 py-2.5 border rounded-xl bg-slate-900/60 border-slate-800 text-white focus:outline-none focus:ring-1 focus:ring-primary/55 ${errors.role ? 'border-danger' : 'focus:border-primary'}`}
               >
-                <option value="">Choose a role to auto-fill...</option>
+                <option value="">Select a role...</option>
                 <option value="Fleet Manager">Fleet Manager</option>
                 <option value="Dispatcher">Dispatcher</option>
                 <option value="Safety Officer">Safety Officer</option>
                 <option value="Financial Analyst">Financial Analyst</option>
               </select>
-            </div>
-
-            {/* Checkbox and Forgot Link */}
-            <div className="flex items-center justify-between font-semibold">
-              <label className="flex items-center gap-2 text-slate-400 cursor-pointer select-none">
-                <input 
-                  type="checkbox" 
-                  className="w-4.5 h-4.5 rounded border-slate-800 bg-slate-900 text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer accent-primary" 
-                />
-                <span>Remember me</span>
-              </label>
-              <Link to="/forgot-password" className="text-primary hover:underline">Forgot password?</Link>
+              {errors.role && <p className="text-[10px] text-danger mt-1">{errors.role.message}</p>}
             </div>
 
             {/* Submit Button */}
@@ -169,32 +166,21 @@ export default function Login() {
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <LogIn size={16} />
-                  Sign In
+                  <UserPlus size={16} />
+                  Register Account
                 </>
               )}
             </button>
           </form>
 
-          {/* Link to Register */}
+          {/* Link to Login */}
           <div className="text-center font-medium">
             <p className="text-slate-400">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-primary hover:underline">
-                Sign Up
+              Already have an account?{' '}
+              <Link to="/login" className="text-primary hover:underline">
+                Sign In
               </Link>
             </p>
-          </div>
-
-          {/* Access Scoping Matrix */}
-          <div className="pt-4 border-t border-slate-900 text-[10px] text-slate-500 space-y-1.5 font-medium">
-            <p className="font-bold text-slate-400 uppercase tracking-wider text-[9px]">Access is scoped by role after login:</p>
-            <div className="grid grid-cols-1 gap-1">
-              <div>* Fleet Manager &arr; Fleet, Maintenance</div>
-              <div>* Dispatcher &arr; Dashboard, Trips</div>
-              <div>* Safety Officer &rarr; Drivers, Compliance</div>
-              <div>* Financial Analyst &rarr; Fuel & Expenses, Analytics</div>
-            </div>
           </div>
         </div>
 
@@ -203,8 +189,8 @@ export default function Login() {
           <div className="absolute right-8 top-8 max-w-xs p-4 border border-dashed border-danger/45 bg-danger/5 rounded-2xl flex items-start gap-3 animate-slide-in text-xs">
             <ShieldAlert className="text-danger flex-shrink-0" size={16} />
             <div className="space-y-1">
-              <p className="font-bold text-danger">Error state</p>
-              <p className="text-slate-400 font-medium">{errorState}. Please check credentials.</p>
+              <p className="font-bold text-danger">Registration Error</p>
+              <p className="text-slate-400 font-medium">{errorState}</p>
             </div>
           </div>
         )}

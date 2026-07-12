@@ -161,7 +161,7 @@ export default function Dashboard() {
           >
             <option value="">All Regions</option>
             {['North', 'South', 'East', 'West'].map(r => (
-              <option key={r} value={r}>{r} Coast Division</option>
+              <option key={r} value={r}>{r} Zone</option>
             ))}
           </select>
         </div>
