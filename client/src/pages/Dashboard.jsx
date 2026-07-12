@@ -6,7 +6,7 @@ import {
   Calendar, RefreshCw
 } from 'lucide-react';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
-import { 
+import {
   Chart as ChartJS, CategoryScale, LinearScale, 
   PointElement, LineElement, BarElement, ArcElement, 
   Title, Tooltip, Legend 
@@ -89,7 +89,7 @@ export default function Dashboard() {
   };
 
   const lineData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
     datasets: [{
       label: 'Monthly Volume (Trips Completed)',
       data: [35, 42, 58, 64, 75, 90, 105],
