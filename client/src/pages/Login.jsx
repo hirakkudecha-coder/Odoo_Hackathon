@@ -18,17 +18,8 @@ export default function Login() {
 
   const handleRoleChange = (e) => {
     const role = e.target.value;
-    if (role === 'Fleet Manager') {
-      setValue('email', 'manager@transitops.com');
-      setValue('password', 'password123');
-    } else if (role === 'Dispatcher') {
-      setValue('email', 'dispatcher@transitops.com');
-      setValue('password', 'password123');
-    } else if (role === 'Safety Officer') {
-      setValue('email', 'safety@transitops.com');
-      setValue('password', 'password123');
-    } else if (role === 'Financial Analyst') {
-      setValue('email', 'finance@transitops.com');
+    if (role) {
+      setValue('email', 'transitops@common.com');
       setValue('password', 'password123');
     }
   };
@@ -141,7 +132,11 @@ export default function Login() {
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Role (RBAC)</label>
               <select 
-                onChange={handleRoleChange}
+                {...register('role')}
+                onChange={(e) => {
+                  register('role').onChange(e);
+                  handleRoleChange(e);
+                }}
                 className="w-full px-3.5 py-2.5 border rounded-xl bg-slate-900/60 border-slate-800 text-white focus:outline-none focus:ring-1 focus:ring-primary/55"
               >
                 <option value="">Choose a role to auto-fill...</option>

