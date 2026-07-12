@@ -23,6 +23,7 @@ const ROLE_PERMISSIONS = {
   ],
   'Safety Officer': [
     'driver:read', 'driver:write', 'driver:safety',
+    'trip:read',
     'settings:read', 'settings:write'
   ],
   'Financial Analyst': [

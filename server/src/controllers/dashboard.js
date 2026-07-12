@@ -7,18 +7,17 @@ import MaintenanceRequest from '../models/MaintenanceRequest.js';
 
 export const getSummary = async (req, res, next) => {
   try {
-    const { vehicleType, status, region } = req.query;
+    const { vehicleType, vehicleStatus, region } = req.query;
     
-    // Apply filters to vehicle counts
-    const vehicleQuery = {};
-    if (vehicleType) vehicleQuery.type = vehicleType;
-    if (status) vehicleQuery.status = status;
-    if (region) vehicleQuery.region = region;
+    const baseVehicleQuery = { isDeleted: { $ne: true } };
+    if (vehicleType) baseVehicleQuery.type = vehicleType;
+    if (vehicleStatus) baseVehicleQuery.status = vehicleStatus;
+    if (region) baseVehicleQuery.region = region;
 
-    const activeVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'on_trip' });
-    const availableVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'available' });
-    const maintenanceVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'In Shop' });
-    const totalVehicles = await Vehicle.countDocuments(vehicleQuery);
+    const activeVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'on_trip' });
+    const availableVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'available' });
+    const maintenanceVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'In Shop' });
+    const totalVehicles = await Vehicle.countDocuments(baseVehicleQuery);
 
     // 2. Driver counts
     const driversOnDuty = await Driver.countDocuments({ status: { $in: ['available', 'on_trip'] } });
@@ -31,9 +30,9 @@ export const getSummary = async (req, res, next) => {
 
     // 4. Financial calculations
     const expensesQuery = { isDeleted: { $ne: true } };
-    if (vehicleQuery.region) {
+    if (baseVehicleQuery.region) {
       // Find vehicles in region to filter expenses
-      const vehiclesInRegion = await Vehicle.find({ region: vehicleQuery.region }).select('_id');
+      const vehiclesInRegion = await Vehicle.find({ region: baseVehicleQuery.region }).select('_id');
       expensesQuery.vehicleId = { $in: vehiclesInRegion.map(v => v._id) };
     }
     const expensesGrouped = await Expense.aggregate([
@@ -51,8 +50,8 @@ export const getSummary = async (req, res, next) => {
     const totalExpenses = expensesGrouped.reduce((acc, curr) => acc + curr.total, 0);
 
     const tripQuery = { status: { $in: ['dispatched', 'in_progress', 'completed'] } };
-    if (vehicleQuery.region) {
-      const vehiclesInRegion = await Vehicle.find({ region: vehicleQuery.region }).select('_id');
+    if (baseVehicleQuery.region) {
+      const vehiclesInRegion = await Vehicle.find({ region: baseVehicleQuery.region }).select('_id');
       tripQuery.vehicleId = { $in: vehiclesInRegion.map(v => v._id) };
     }
     const tripRevenueAggregation = await Trip.aggregate([

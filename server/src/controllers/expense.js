@@ -1,4 +1,5 @@
 import Expense from '../models/Expense.js';
+import Vehicle from '../models/Vehicle.js';
 import AuditLog from '../models/AuditLog.js';
 
 export const getExpenses = async (req, res, next) => {
@@ -60,6 +61,11 @@ export const createExpense = async (req, res, next) => {
 
     const saved = await expense.save();
 
+    // Hook: If maintenance is created, set vehicle to "In Shop"
+    if (saved.category === 'Maintenance' && saved.vehicleId) {
+      await Vehicle.findByIdAndUpdate(saved.vehicleId, { status: 'In Shop' });
+    }
+
     await AuditLog.create({
       actorId: req.user._id,
       entityType: 'Expense',
@@ -110,6 +116,15 @@ export const deleteExpense = async (req, res, next) => {
     }
 
     await Expense.findByIdAndUpdate(req.params.id, { isDeleted: true, deletedAt: new Date() });
+
+    // Hook: If maintenance is deleted, check if vehicle needs restoring
+    if (beforeExpense.category === 'Maintenance' && beforeExpense.vehicleId) {
+      const vehicle = await Vehicle.findById(beforeExpense.vehicleId);
+      if (vehicle && vehicle.status === 'In Shop') {
+        vehicle.status = 'available';
+        await vehicle.save();
+      }
+    }
 
     await AuditLog.create({
       actorId: req.user._id,

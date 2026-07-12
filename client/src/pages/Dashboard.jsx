@@ -45,7 +45,7 @@ export default function Dashboard() {
     try {
       const [sumRes, chartRes, tripRes] = await Promise.all([
         apiClient.get('/dashboard/summary', {
-          params: { vehicleType, status: vehicleStatus, region }
+          params: { vehicleType, vehicleStatus, region }
         }),
         apiClient.get('/dashboard/charts'),
         apiClient.get('/trips?limit=5').catch(err => {
