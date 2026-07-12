@@ -7,6 +7,7 @@ import { Mail, Lock, LogIn, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { loginStart, loginSuccess, loginFailure } from '../store/slices/authSlice.js';
+import ImageCarousel from '../components/ImageCarousel.jsx';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,47 +43,9 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#080B10]">
-      {/* LEFT PANEL: Branding & Info */}
-      <div className="w-full md:w-5/12 bg-slate-200 dark:bg-slate-900/50 dark:border-r dark:border-slate-800 p-8 md:p-12 flex flex-col justify-between text-slate-800 dark:text-slate-200 min-h-[40vh] md:min-h-screen">
-        <div className="space-y-8">
-          {/* Logo & Title */}
-          <div className="flex items-start gap-4">
-            <svg width="48" height="48" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="40" height="40" rx="8" fill="#EA580C" fillOpacity="0.15"/>
-              <rect x="0.5" y="0.5" width="39" height="39" rx="7.5" stroke="#EA580C" strokeWidth="1.5"/>
-              <path d="M10 10H30V30H10V10Z" stroke="#EA580C" strokeWidth="1.5" strokeDasharray="3 3"/>
-              <path d="M15 10V30M20 10V30M25 10V30M10 15H30M10 20H30M10 25H30" stroke="#EA580C" strokeWidth="1" strokeOpacity="0.4"/>
-            </svg>
-            <div>
-              <h1 className="text-3xl font-extrabold tracking-tight">TransitOps</h1>
-              <p className="text-xs text-slate-500 mt-0.5">Smart Transport Operations Platform</p>
-            </div>
-          </div>
-
-          {/* List of Roles */}
-          <div className="space-y-3 pt-6">
-            <p className="font-semibold text-slate-700 dark:text-slate-350 text-sm">One login, four roles:</p>
-            <ul className="space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Fleet Manager
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Dispatcher
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Safety Officer
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" /> Financial Analyst
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <div className="text-[10px] text-slate-500 font-bold tracking-wider pt-6">
-          TRANSITOPS © 2026 • RBAC ENABLED
-        </div>
+      {/* LEFT PANEL: Carousel */}
+      <div className="w-full md:w-5/12 min-h-[40vh] md:min-h-screen relative">
+        <ImageCarousel />
       </div>
 
       {/* RIGHT PANEL: Credentials Panel */}
