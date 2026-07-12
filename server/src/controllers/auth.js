@@ -189,3 +189,54 @@ export const getMe = async (req, res) => {
     }
   });
 };
+
+export const registerUser = async (req, res, next) => {
+  try {
+    const { name, email, password, role } = req.body;
+    
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Email address already registered' });
+    }
+
+    const user = new User({
+      name,
+      email,
+      password,
+      role: role || 'Fleet Manager',
+      status: 'active'
+    });
+
+    await user.save();
+
+    // Auto-login upon registration
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken();
+    const tokenHash = jwt.sign({ id: user._id }, process.env.JWT_REFRESH_SECRET);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    user.refreshTokens.push({ tokenHash, expiresAt });
+    await user.save();
+
+    res.cookie('refreshToken', tokenHash, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Registered and logged in successfully',
+      accessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

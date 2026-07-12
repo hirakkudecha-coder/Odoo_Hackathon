@@ -8,6 +8,7 @@ import { initTheme } from './store/slices/themeSlice.js';
 // Layout & Pages
 import DashboardLayout from './layouts/DashboardLayout.jsx';
 import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Vehicles from './pages/Vehicles.jsx';
@@ -41,6 +42,7 @@ function AppContent() {
         <Routes>
           {/* Public Auth Portals */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Secure Layout routes */}

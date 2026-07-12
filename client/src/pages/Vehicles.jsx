@@ -258,7 +258,7 @@ export default function Vehicles() {
               type="text" 
               {...register('registrationNumber', { required: 'Registration is required' })}
               className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/20"
-              placeholder="e.g. TX-987-AB"
+              placeholder="e.g. MH-12-PQ-5678"
             />
             {errors.registrationNumber && <p className="text-[10px] text-danger mt-1 font-semibold">{errors.registrationNumber.message}</p>}
           </div>
@@ -269,7 +269,7 @@ export default function Vehicles() {
               type="text" 
               {...register('name', { required: 'Name is required' })}
               className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/20"
-              placeholder="e.g. Freightliner Cascadia"
+              placeholder="e.g. Tata Prima 4930.S"
             />
           </div>
 
