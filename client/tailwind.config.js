@@ -9,15 +9,15 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#f97316', // Orange-500 matching the screenshot
-          hover: '#ea580c',   // Orange-600
-          light: '#ffedd5',   // Orange-100
-          dark: '#c2410c'     // Orange-700
+          DEFAULT: '#EA580C',
+          hover: '#C2410C',
+          light: '#FFEDD5',
+          dark: '#9A3412'
         },
         secondary: {
-          DEFAULT: '#0EA5E9',
-          hover: '#0284C7',
-          light: '#E0F2FE'
+          DEFAULT: '#F59E0B',
+          hover: '#D97706',
+          light: '#FEF3C7'
         },
         success: {
           DEFAULT: '#22C55E',
@@ -33,19 +33,19 @@ export default {
         },
         brandbg: {
           light: '#F8FAFC',
-          dark: '#0a0a0a' // Deeper black matching the screenshot background
+          dark: '#0F172A'
         },
         brandcard: {
           light: '#FFFFFF',
-          dark: '#171717' // Slightly elevated dark grey matching the screenshot cards
+          dark: '#1E293B'
         }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.3)',
-        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 10px -1px rgba(0, 0, 0, 0.2)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.08)',
+        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -1px rgba(0, 0, 0, 0.03)',
       }
     },
   },

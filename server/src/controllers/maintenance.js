@@ -65,8 +65,8 @@ export const createMaintenance = async (req, res, next) => {
         throw { status: 409, message: 'Vehicle is currently on a trip and cannot be scheduled for maintenance' };
       }
 
-      // Automatically change vehicle status to maintenance
-      vehicle.status = 'maintenance';
+      // Automatically change vehicle status to In Shop
+      vehicle.status = 'In Shop';
       await vehicle.save({ session });
 
       const request = new MaintenanceRequest({

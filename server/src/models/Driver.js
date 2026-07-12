@@ -49,7 +49,7 @@ const driverSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['available', 'on_trip', 'suspended', 'inactive'],
+    enum: ['available', 'on_trip', 'suspended', 'Off Duty'],
     default: 'available',
   },
   licenseDocumentUrl: {

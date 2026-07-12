@@ -7,28 +7,37 @@ import MaintenanceRequest from '../models/MaintenanceRequest.js';
 
 export const getSummary = async (req, res, next) => {
   try {
-    const { vehicleType, vehicleStatus } = req.query;
+    const { vehicleType, status, region } = req.query;
     
-    const baseVehicleQuery = { isDeleted: { $ne: true } };
-    if (vehicleType) baseVehicleQuery.type = vehicleType;
-    if (vehicleStatus) baseVehicleQuery.status = vehicleStatus;
+    // Apply filters to vehicle counts
+    const vehicleQuery = {};
+    if (vehicleType) vehicleQuery.type = vehicleType;
+    if (status) vehicleQuery.status = status;
+    if (region) vehicleQuery.region = region;
 
-    // 1. Vehicle counts
-    const activeVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'on_trip' });
-    const availableVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'available' });
-    const maintenanceVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: 'maintenance' });
-    const totalVehicles = await Vehicle.countDocuments({ ...baseVehicleQuery, status: { $ne: 'retired' } });
+    const activeVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'on_trip' });
+    const availableVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'available' });
+    const maintenanceVehicles = await Vehicle.countDocuments({ ...vehicleQuery, status: 'In Shop' });
+    const totalVehicles = await Vehicle.countDocuments(vehicleQuery);
 
-    // 2. Trip & Driver counts
+    // 2. Driver counts
+    const driversOnDuty = await Driver.countDocuments({ status: { $in: ['available', 'on_trip'] } });
+
+    // 3. Trip counts
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const tripsToday = await Trip.countDocuments({ createdAt: { $gte: today } });
     const pendingTrips = await Trip.countDocuments({ status: { $in: ['draft', 'scheduled'] } });
-    const driversOnDuty = await Driver.countDocuments({ status: 'on_trip', isDeleted: { $ne: true } });
 
-    // 3. Financial calculations
+    // 4. Financial calculations
+    const expensesQuery = { isDeleted: { $ne: true } };
+    if (vehicleQuery.region) {
+      // Find vehicles in region to filter expenses
+      const vehiclesInRegion = await Vehicle.find({ region: vehicleQuery.region }).select('_id');
+      expensesQuery.vehicleId = { $in: vehiclesInRegion.map(v => v._id) };
+    }
     const expensesGrouped = await Expense.aggregate([
-      { $match: { isDeleted: { $ne: true } } },
+      { $match: expensesQuery },
       { $group: { _id: '$category', total: { $sum: '$amount' } } }
     ]);
 
@@ -41,8 +50,13 @@ export const getSummary = async (req, res, next) => {
     const maintenanceCost = expenseMap['Maintenance'] || 0;
     const totalExpenses = expensesGrouped.reduce((acc, curr) => acc + curr.total, 0);
 
+    const tripQuery = { status: { $in: ['dispatched', 'in_progress', 'completed'] } };
+    if (vehicleQuery.region) {
+      const vehiclesInRegion = await Vehicle.find({ region: vehicleQuery.region }).select('_id');
+      tripQuery.vehicleId = { $in: vehiclesInRegion.map(v => v._id) };
+    }
     const tripRevenueAggregation = await Trip.aggregate([
-      { $match: { status: { $in: ['dispatched', 'in_progress', 'completed'] } } },
+      { $match: tripQuery },
       { $group: { _id: null, totalRevenue: { $sum: '$revenue' } } }
     ]);
     const revenue = tripRevenueAggregation[0]?.totalRevenue || 0;
@@ -60,12 +74,10 @@ export const getSummary = async (req, res, next) => {
           total: totalVehicles,
           utilization: fleetUtilization
         },
+        driversOnDuty,
         trips: {
           today: tripsToday,
           pending: pendingTrips
-        },
-        drivers: {
-          onDuty: driversOnDuty
         },
         financials: {
           revenue,

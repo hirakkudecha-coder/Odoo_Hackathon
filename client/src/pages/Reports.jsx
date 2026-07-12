@@ -8,28 +8,6 @@ export default function Reports() {
   const [loading, setLoading] = useState(false);
   const [previewData, setPreviewData] = useState([]);
 
-  const [activeTab, setActiveTab] = useState('export');
-  const [analyticsData, setAnalyticsData] = useState([]);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-
-  React.useEffect(() => {
-    if (activeTab === 'analytics' && analyticsData.length === 0) {
-      fetchAnalytics();
-    }
-  }, [activeTab]);
-
-  const fetchAnalytics = async () => {
-    setAnalyticsLoading(true);
-    try {
-      const response = await apiClient.get('/reports/analytics/roi');
-      setAnalyticsData(response.data.data);
-    } catch (error) {
-      toast.error('Failed to load advanced analytics');
-    } finally {
-      setAnalyticsLoading(false);
-    }
-  };
-
   const handleFetchPreview = async () => {
     setLoading(true);
     try {
@@ -78,22 +56,6 @@ export default function Reports() {
         <p className="text-sm text-slate-500">Query operational registries and export compliant CSV or PDF files.</p>
       </div>
 
-      <div className="flex gap-6 border-b border-zinc-800 pt-2">
-        <button 
-          onClick={() => setActiveTab('export')}
-          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === 'export' ? 'text-primary border-b-2 border-primary' : 'text-zinc-500 hover:text-zinc-300'}`}
-        >
-          Data Export Engine
-        </button>
-        <button 
-          onClick={() => setActiveTab('analytics')}
-          className={`pb-3 font-semibold text-sm transition-colors ${activeTab === 'analytics' ? 'text-primary border-b-2 border-primary' : 'text-zinc-500 hover:text-zinc-300'}`}
-        >
-          Vehicle Analytics & ROI
-        </button>
-      </div>
-
-      {activeTab === 'export' ? (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Side Parameters card */}
         <div className="glass-panel rounded-3xl p-6 space-y-4 h-fit">
@@ -187,63 +149,6 @@ export default function Reports() {
           )}
         </div>
       </div>
-      ) : (
-        <div className="glass-panel rounded-3xl p-6 space-y-4 min-h-[50vh]">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 className="font-bold text-sm">Vehicle Fleet Analytics (Per Unit)</h3>
-            <button onClick={fetchAnalytics} className="text-primary hover:text-primary-hover text-xs font-semibold px-3 py-1.5 rounded-lg border border-primary/20 bg-primary/10 transition-colors">
-              Refresh Data
-            </button>
-          </div>
-          
-          {analyticsLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-2">
-              <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-xs font-semibold">Computing complex ROI formulas...</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
-              <table className="w-full text-left text-[11px] font-medium border-collapse">
-                <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-                  <tr>
-                    <th className="p-3">Vehicle</th>
-                    <th className="p-3">Revenue</th>
-                    <th className="p-3 text-rose-500">Fuel Cost</th>
-                    <th className="p-3 text-rose-500">Maint. Cost</th>
-                    <th className="p-3 font-bold text-rose-600">Total Ops Cost</th>
-                    <th className="p-3">Fuel Efficiency</th>
-                    <th className="p-3 font-bold text-emerald-500">ROI (%)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {analyticsData.map(v => (
-                    <tr key={v.vehicleId} className="hover:bg-slate-50/40 dark:hover:bg-slate-800/10 transition-colors">
-                      <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
-                        {v.registrationNumber} <span className="block text-[10px] text-slate-500 font-normal">{v.name}</span>
-                      </td>
-                      <td className="p-3 text-slate-600 dark:text-slate-300">${v.revenue.toLocaleString()}</td>
-                      <td className="p-3 text-rose-500/80">${v.fuelCost.toLocaleString()}</td>
-                      <td className="p-3 text-rose-500/80">${v.maintenanceCost.toLocaleString()}</td>
-                      <td className="p-3 font-bold text-rose-500">${v.operationalCost.toLocaleString()}</td>
-                      <td className="p-3 text-slate-600 dark:text-slate-300">
-                        {v.fuelEfficiency} <span className="text-[10px] text-slate-400 font-normal">km/L</span>
-                      </td>
-                      <td className={`p-3 font-bold ${v.roi > 0 ? 'text-emerald-500' : v.roi < 0 ? 'text-rose-500' : 'text-slate-500'}`}>
-                        {v.roi > 0 ? '+' : ''}{v.roi}%
-                      </td>
-                    </tr>
-                  ))}
-                  {analyticsData.length === 0 && (
-                    <tr>
-                      <td colSpan="7" className="p-10 text-center text-slate-400">No vehicle data available for analytics</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

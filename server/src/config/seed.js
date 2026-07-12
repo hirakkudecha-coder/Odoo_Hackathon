@@ -21,11 +21,11 @@ const users = [
 ];
 
 const vehicles = [
-  { registrationNumber: 'TX-987-AB', name: 'Freightliner M2', type: 'Box Truck', capacityKg: 12000, odometerKm: 145200, acquisitionCost: 85000, status: 'available' },
-  { registrationNumber: 'CA-123-CD', name: 'Kenworth T680', type: 'Semi-Trailer', capacityKg: 24000, odometerKm: 320400, acquisitionCost: 140000, status: 'on_trip' },
-  { registrationNumber: 'NY-456-EF', name: 'Peterbilt 579', type: 'Reefer', capacityKg: 20000, odometerKm: 98150, acquisitionCost: 155000, status: 'maintenance' },
-  { registrationNumber: 'FL-789-GH', name: 'Ford Transit 350', type: 'Cargo Van', capacityKg: 3500, odometerKm: 54100, acquisitionCost: 45000, status: 'available' },
-  { registrationNumber: 'IL-321-IJ', name: 'Volvo FH16', type: 'Semi-Trailer', capacityKg: 25000, odometerKm: 421000, acquisitionCost: 165000, status: 'retired' }
+  { registrationNumber: 'TX-987-AB', name: 'Freightliner M2', type: 'Box Truck', capacityKg: 12000, odometerKm: 145200, acquisitionCost: 85000, status: 'available', region: 'North' },
+  { registrationNumber: 'CA-123-CD', name: 'Kenworth T680', type: 'Semi-Trailer', capacityKg: 24000, odometerKm: 320400, acquisitionCost: 140000, status: 'on_trip', region: 'South' },
+  { registrationNumber: 'NY-456-EF', name: 'Peterbilt 579', type: 'Reefer', capacityKg: 20000, odometerKm: 98150, acquisitionCost: 155000, status: 'In Shop', region: 'East' },
+  { registrationNumber: 'FL-789-GH', name: 'Ford Transit 350', type: 'Cargo Van', capacityKg: 3500, odometerKm: 54100, acquisitionCost: 45000, status: 'available', region: 'West' },
+  { registrationNumber: 'IL-321-IJ', name: 'Volvo FH16', type: 'Semi-Trailer', capacityKg: 25000, odometerKm: 421000, acquisitionCost: 165000, status: 'retired', region: 'North' }
 ];
 
 const drivers = [
@@ -143,7 +143,7 @@ const seedDatabase = async () => {
     console.log(`Seeded ${seededTrips.length} trips.`);
 
     // Seed Maintenance Request
-    const maintenanceVehicle = seededVehicles.find(v => v.status === 'maintenance');
+    const maintenanceVehicle = seededVehicles.find(v => v.status === 'In Shop');
     const maintenanceReq = new MaintenanceRequest({
       vehicleId: maintenanceVehicle._id,
       type: 'Repair',

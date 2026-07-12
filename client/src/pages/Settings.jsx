@@ -84,6 +84,47 @@ export default function SettingsPage() {
           </form>
         </div>
       </div>
+
+      {/* RBAC Permission Matrix Grid */}
+      <div className="glass-panel rounded-3xl p-6 space-y-4">
+        <h3 className="font-bold text-sm border-b pb-2 border-slate-100 dark:border-slate-800 flex items-center gap-2">
+          <Settings size={16} className="text-primary" /> Role-Based Access Control (RBAC) Permission Matrix
+        </h3>
+        <div className="overflow-x-auto rounded-2xl border border-slate-200/50 dark:border-slate-800/50 bg-white/50 dark:bg-slate-900/50">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-250 dark:border-slate-800 text-slate-500 font-semibold uppercase tracking-wider">
+                <th className="p-3">Permission Domain</th>
+                <th className="p-3 text-center">Fleet Manager</th>
+                <th className="p-3 text-center">Driver</th>
+                <th className="p-3 text-center">Safety Officer</th>
+                <th className="p-3 text-center">Financial Analyst</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200/30 dark:divide-slate-800/30 font-medium">
+              {[
+                { name: 'Read & Register Vehicles', roles: ['Fleet Manager', 'Driver'] },
+                { name: 'Manage Maintenance Requests', roles: ['Fleet Manager'] },
+                { name: 'Log & Track Fuel Receipts', roles: ['Fleet Manager', 'Financial Analyst'] },
+                { name: 'Draft, Dispatch & Cancel Trips', roles: ['Driver'] },
+                { name: 'Complete Dispatched Trips', roles: ['Driver'] },
+                { name: 'Manage Operational Expenses', roles: ['Financial Analyst'] },
+                { name: 'Export CSV/PDF Analytical Reports', roles: ['Financial Analyst'] },
+                { name: 'Audit & Safety Officer Records', roles: ['Safety Officer'] }
+              ].map((perm, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/20">
+                  <td className="p-3 font-semibold text-slate-700 dark:text-slate-350">{perm.name}</td>
+                  {['Fleet Manager', 'Driver', 'Safety Officer', 'Financial Analyst'].map(role => (
+                    <td key={role} className="p-3 text-center text-sm font-bold text-primary">
+                      {perm.roles.includes(role) ? '✓' : '—'}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

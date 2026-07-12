@@ -1,5 +1,8 @@
 import Vehicle from '../models/Vehicle.js';
 import AuditLog from '../models/AuditLog.js';
+import Trip from '../models/Trip.js';
+import MaintenanceRequest from '../models/MaintenanceRequest.js';
+import FuelLog from '../models/FuelLog.js';
 
 export const getVehicles = async (req, res, next) => {
   try {
@@ -29,9 +32,37 @@ export const getVehicles = async (req, res, next) => {
 
     const total = await Vehicle.countDocuments(query);
 
+    // Calculate dynamic ROI and operational metrics for each vehicle
+    const calculatedData = await Promise.all(data.map(async (v) => {
+      const [trips, maintenance, fuel] = await Promise.all([
+        Trip.find({ vehicleId: v._id, status: 'completed' }),
+        MaintenanceRequest.find({ vehicleId: v._id, status: 'completed' }),
+        FuelLog.find({ vehicleId: v._id })
+      ]);
+
+      const totalRevenue = trips.reduce((acc, curr) => acc + curr.revenue, 0);
+      const totalMaintenanceCost = maintenance.reduce((acc, curr) => acc + curr.cost, 0);
+      const totalFuelCost = fuel.reduce((acc, curr) => acc + curr.cost, 0);
+      const totalFuelLiters = fuel.reduce((acc, curr) => acc + curr.liters, 0);
+      
+      const totalOperationalCost = totalFuelCost + totalMaintenanceCost;
+      const fuelEfficiency = totalFuelLiters > 0 ? (v.odometerKm / totalFuelLiters) : 0;
+      
+      const roi = v.acquisitionCost > 0 
+        ? ((totalRevenue - totalOperationalCost) / v.acquisitionCost) 
+        : 0;
+
+      return {
+        ...v.toObject(),
+        totalOperationalCost,
+        fuelEfficiency,
+        roi
+      };
+    }));
+
     res.json({
       success: true,
-      data,
+      data: calculatedData,
       meta: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -46,11 +77,38 @@ export const getVehicles = async (req, res, next) => {
 
 export const getVehicleById = async (req, res, next) => {
   try {
-    const vehicle = await Vehicle.findById(req.params.id);
-    if (!vehicle) {
+    const v = await Vehicle.findById(req.params.id);
+    if (!v) {
       return res.status(404).json({ success: false, message: 'Vehicle not found' });
     }
-    res.json({ success: true, data: vehicle });
+
+    const [trips, maintenance, fuel] = await Promise.all([
+      Trip.find({ vehicleId: v._id, status: 'completed' }),
+      MaintenanceRequest.find({ vehicleId: v._id, status: 'completed' }),
+      FuelLog.find({ vehicleId: v._id })
+    ]);
+
+    const totalRevenue = trips.reduce((acc, curr) => acc + curr.revenue, 0);
+    const totalMaintenanceCost = maintenance.reduce((acc, curr) => acc + curr.cost, 0);
+    const totalFuelCost = fuel.reduce((acc, curr) => acc + curr.cost, 0);
+    const totalFuelLiters = fuel.reduce((acc, curr) => acc + curr.liters, 0);
+    
+    const totalOperationalCost = totalFuelCost + totalMaintenanceCost;
+    const fuelEfficiency = totalFuelLiters > 0 ? (v.odometerKm / totalFuelLiters) : 0;
+    
+    const roi = v.acquisitionCost > 0 
+      ? ((totalRevenue - totalOperationalCost) / v.acquisitionCost) 
+      : 0;
+
+    res.json({ 
+      success: true, 
+      data: {
+        ...v.toObject(),
+        totalOperationalCost,
+        fuelEfficiency,
+        roi
+      }
+    });
   } catch (error) {
     next(error);
   }

@@ -135,7 +135,9 @@ export default function Vehicles() {
     { header: 'Vehicle Name', accessor: 'name', sortable: true },
     { header: 'Type', accessor: 'type', sortable: true },
     { header: 'Odometer (km)', accessor: 'odometerKm', sortable: true, cell: (row) => row.odometerKm.toLocaleString() },
-    { header: 'Capacity (kg)', accessor: 'capacityKg', sortable: true, cell: (row) => row.capacityKg.toLocaleString() },
+    { header: 'Operational Cost', accessor: 'totalOperationalCost', cell: (row) => `$${(row.totalOperationalCost || 0).toLocaleString()}` },
+    { header: 'Fuel Efficiency', accessor: 'fuelEfficiency', cell: (row) => `${(row.fuelEfficiency || 0).toFixed(2)} km/L` },
+    { header: 'ROI', accessor: 'roi', cell: (row) => <span className={`font-bold ${(row.roi || 0) >= 0 ? 'text-success' : 'text-danger'}`}>{((row.roi || 0) * 100).toFixed(1)}%</span> },
     {
       header: 'Status',
       accessor: 'status',
@@ -144,7 +146,7 @@ export default function Vehicles() {
         const colors = {
           available: 'bg-success-light text-success border-success/10',
           on_trip: 'bg-primary-light text-primary border-primary/10',
-          maintenance: 'bg-warning-light text-warning border-warning/10',
+          'In Shop': 'bg-warning-light text-warning border-warning/10',
           retired: 'bg-danger-light text-danger border-danger/10'
         };
         return (
@@ -203,7 +205,7 @@ export default function Vehicles() {
       {/* Filter tab row */}
       <div className="flex items-center justify-between flex-wrap gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/50 dark:border-slate-800/50">
         <div className="flex items-center gap-2">
-          {['', 'available', 'on_trip', 'maintenance', 'retired'].map((status) => (
+          {['', 'available', 'on_trip', 'In Shop', 'retired'].map((status) => (
             <button
               key={status}
               onClick={() => { setStatusFilter(status); setPage(1); }}
@@ -315,34 +317,17 @@ export default function Vehicles() {
           </div>
 
           {editingVehicle && (
-            <>
-              <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Operational Status</label>
-                <select 
-                  {...register('status')}
-                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none"
-                >
-                  {['available', 'on_trip', 'maintenance', 'retired'].map(s => (
-                    <option key={s} value={s}>{s.replace('_', ' ').toUpperCase()}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="pt-2">
-                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Attached Documents</label>
-                {editingVehicle.documents && editingVehicle.documents.length > 0 ? (
-                  <ul className="space-y-2 border border-slate-200 dark:border-slate-800 rounded-xl p-3 bg-slate-50/50 dark:bg-slate-900">
-                    {editingVehicle.documents.map((doc, idx) => (
-                      <li key={idx} className="flex items-center justify-between">
-                        <span className="font-semibold text-primary truncate max-w-[150px]">{doc.name}</span>
-                        <span className="text-[10px] text-slate-500">Exp: {doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString() : 'N/A'}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="text-slate-400 text-[10px] italic">No documents attached. Use the upload button on the table.</div>
-                )}
-              </div>
-            </>
+            <div>
+              <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Operational Status</label>
+              <select 
+                {...register('status')}
+                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none"
+              >
+                {['available', 'on_trip', 'In Shop', 'retired'].map(s => (
+                  <option key={s} value={s}>{s.replace('_', ' ').toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
           )}
 
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">

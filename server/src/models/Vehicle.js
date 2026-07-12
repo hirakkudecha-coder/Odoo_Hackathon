@@ -35,8 +35,13 @@ const vehicleSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['available', 'on_trip', 'maintenance', 'retired'],
+    enum: ['available', 'on_trip', 'In Shop', 'retired'],
     default: 'available',
+  },
+  region: {
+    type: String,
+    enum: ['North', 'South', 'East', 'West'],
+    default: 'North',
   },
   documents: [
     {

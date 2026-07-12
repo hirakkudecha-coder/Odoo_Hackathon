@@ -170,7 +170,7 @@ export default function Drivers() {
           available: 'bg-success-light text-success border-success/10',
           on_trip: 'bg-primary-light text-primary border-primary/10',
           suspended: 'bg-danger-light text-danger border-danger/10',
-          inactive: 'bg-slate-100 text-slate-850'
+          'Off Duty': 'bg-slate-100 text-slate-850'
         };
         return (
           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase ${colors[row.status] || 'bg-slate-100 text-slate-800'}`}>
@@ -276,7 +276,7 @@ export default function Drivers() {
             <div>
               <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Status</label>
               <select {...register('status')} className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900 focus:outline-none">
-                {['available', 'on_trip', 'suspended', 'inactive'].map(s => (
+                {['available', 'on_trip', 'suspended', 'Off Duty'].map(s => (
                   <option key={s} value={s}>{s.toUpperCase()}</option>
                 ))}
               </select>

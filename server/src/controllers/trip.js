@@ -129,7 +129,7 @@ export const dispatchTrip = async (req, res, next) => {
       }
 
       // Check vehicle invariants
-      if (vehicle.status === 'retired' || vehicle.status === 'maintenance') {
+      if (vehicle.status === 'retired' || vehicle.status === 'In Shop') {
         throw { status: 409, message: `Vehicle is currently in ${vehicle.status} status and cannot be assigned` };
       }
       if (vehicle.status === 'on_trip') {
@@ -142,7 +142,7 @@ export const dispatchTrip = async (req, res, next) => {
       }
 
       // Check driver invariants
-      if (driver.status === 'suspended' || driver.status === 'inactive') {
+      if (driver.status === 'suspended' || driver.status === 'Off Duty') {
         throw { status: 409, message: `Driver is currently ${driver.status} and cannot be assigned` };
       }
       if (driver.status === 'on_trip') {
